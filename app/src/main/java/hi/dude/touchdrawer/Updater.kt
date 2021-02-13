@@ -21,6 +21,8 @@ class Updater(private val activity: MainActivity) : Runnable {
     private val w: Int
     private val h: Int
 
+    var alive = true
+
     init {
         val metrics = DisplayMetrics()
         activity.windowManager.defaultDisplay.getMetrics(metrics)
@@ -33,26 +35,25 @@ class Updater(private val activity: MainActivity) : Runnable {
     }
 
     override fun run() {
-        while (true) {
+        while (alive) {
             draw()
         }
     }
 
     private fun draw() {
-
+        if (activity.points.size > 0) train()
         val bitmap = drawPointsOn(createBackground())
         synchronized(activity) {
-            if (activity.points.size > 0) train()
             activity.runOnUiThread { activity.view.background = BitmapDrawable(activity.resources, bitmap) }
         }
     }
 
     private fun createBackground(): Bitmap {
-        val bitmap = createBitmap(w / 8 + 1, h / 8 + 1)
-        for (i in 0..(w / 8)) {
-            for (j in 0..(h / 8)) {
-                val nx = i.toDouble() / w * 8 - 0.5
-                val ny = j.toDouble() / h * 8 - 0.5
+        val bitmap = createBitmap(w / 20 + 1, h / 20 + 1)
+        for (i in 0..(w / 20)) {
+            for (j in 0..(h / 20)) {
+                val nx = i.toDouble() / w * 20 - 0.5
+                val ny = j.toDouble() / h * 20 - 0.5
                 val outputs = network.feedForward(doubleArrayOf(nx, ny))
 
                 var black = max(0.0, min(1.0, outputs[0] - outputs[1] + 0.5))
@@ -60,7 +61,7 @@ class Updater(private val activity: MainActivity) : Runnable {
                 black = 0.3 + black * 0.5
                 white = 0.5 + white * 0.5
 
-//                val color = 100 shl 16 or ((black * 255).toInt() shl 8) or (white * 255).toInt()
+//                val color = 100 shl 20 or ((black * 255).toInt() shl 20) or (white * 255).toInt()
 //                bitmap.setPixel(i, j, color)
                 val br = (255 * white).toInt()
                 bitmap.setPixel(i, j, Color.rgb(br, br, br))
@@ -86,7 +87,8 @@ class Updater(private val activity: MainActivity) : Runnable {
 
     private fun train() {
         for (i in 0..10000) {
-            val p = activity.points[(Math.random() * activity.points.size).toInt()]
+
+            val p = activity.points[(Math.random() * activity.points.size).toInt()] ?: continue
             val nx = p.x / w - 0.5
             val ny = p.y / h - 0.5
 
@@ -98,5 +100,11 @@ class Updater(private val activity: MainActivity) : Runnable {
 
             network.backpropagation(targets)
         }
+    }
+
+    fun resetNetwork() {
+        val sigmoid = { x: Double -> 1 / (1 + exp(-x)) }
+        val dsigmoid = { y: Double -> y * (1 - y) }
+        network = NeuralNetwork(0.01, sigmoid, dsigmoid, 2, 5, 5, 2)
     }
 }

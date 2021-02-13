@@ -6,13 +6,18 @@ import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import androidx.core.content.ContextCompat
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 class MainActivity : AppCompatActivity() {
 
     private val TAG = "MainActivity"
 
     lateinit var view: View
+    private lateinit var reset: FloatingActionButton
     val points = ArrayList<Point>()
+
+    private lateinit var updater: Updater
+    private lateinit var threadUpdater: Thread
 
     private var ignore = false
     private var isBlack = true
@@ -28,7 +33,12 @@ class MainActivity : AppCompatActivity() {
         view = findViewById(R.id.main_view)
         view.setOnTouchListener { _, event -> onTouch(event) }
 
-        Thread(Updater(this)).start()
+        reset = findViewById(R.id.reset_button)
+        reset.setOnClickListener { resetClicked() }
+
+        updater = Updater(this)
+        threadUpdater = Thread(updater)
+        threadUpdater.start()
     }
 
     private fun onTouch(event: MotionEvent?): Boolean {
@@ -51,5 +61,12 @@ class MainActivity : AppCompatActivity() {
         return true
     }
 
-
+    private fun resetClicked() {
+        updater.alive = false
+        threadUpdater.join()
+        points.clear()
+        updater = Updater(this)
+        threadUpdater = Thread(updater)
+        threadUpdater.start()
+    }
 }
