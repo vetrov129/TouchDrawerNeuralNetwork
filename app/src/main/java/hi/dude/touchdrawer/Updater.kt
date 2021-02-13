@@ -57,13 +57,8 @@ class Updater(private val activity: MainActivity) : Runnable {
                 val outputs = network.feedForward(doubleArrayOf(nx, ny))
 
                 var black = max(0.0, min(1.0, outputs[0] - outputs[1] + 0.5))
-                var white = 1 - black
                 black = 0.3 + black * 0.5
-                white = 0.5 + white * 0.5
-
-//                val color = 100 shl 20 or ((black * 255).toInt() shl 20) or (white * 255).toInt()
-//                bitmap.setPixel(i, j, color)
-                val br = (255 * white).toInt()
+                val br = (255 * black).toInt()
                 bitmap.setPixel(i, j, Color.rgb(br, br, br))
             }
         }
@@ -75,12 +70,8 @@ class Updater(private val activity: MainActivity) : Runnable {
         val canvas = Canvas(bitmap)
         val paint = Paint()
         for (p in activity.points) {
-            paint.color = Color.GRAY
-            canvas.drawCircle(p.x, p.y, 50F, paint)
-
             if (p.isBlack) paint.color = Color.BLACK else paint.color = Color.WHITE
             canvas.drawCircle(p.x, p.y, 45F, paint)
-
         }
         return bitmap
     }
@@ -100,11 +91,5 @@ class Updater(private val activity: MainActivity) : Runnable {
 
             network.backpropagation(targets)
         }
-    }
-
-    fun resetNetwork() {
-        val sigmoid = { x: Double -> 1 / (1 + exp(-x)) }
-        val dsigmoid = { y: Double -> y * (1 - y) }
-        network = NeuralNetwork(0.01, sigmoid, dsigmoid, 2, 5, 5, 2)
     }
 }
