@@ -6,7 +6,6 @@ import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.drawable.BitmapDrawable
 import android.util.DisplayMetrics
-import android.util.Log
 import androidx.core.graphics.createBitmap
 import androidx.core.graphics.scale
 import kotlin.math.exp
@@ -40,9 +39,12 @@ class Updater(private val activity: MainActivity) : Runnable {
     }
 
     private fun draw() {
-        if (activity.points.size > 0) train()
+
         val bitmap = drawPointsOn(createBackground())
-        activity.runOnUiThread { activity.view.background = BitmapDrawable(activity.resources, bitmap) }
+        synchronized(activity) {
+            if (activity.points.size > 0) train()
+            activity.runOnUiThread { activity.view.background = BitmapDrawable(activity.resources, bitmap) }
+        }
     }
 
     private fun createBackground(): Bitmap {
@@ -60,23 +62,24 @@ class Updater(private val activity: MainActivity) : Runnable {
 
 //                val color = 100 shl 16 or ((black * 255).toInt() shl 8) or (white * 255).toInt()
 //                bitmap.setPixel(i, j, color)
-
-                bitmap.setPixel(i, j, if (black > white) Color.BLACK else Color.WHITE)
+                val br = (255 * white).toInt()
+                bitmap.setPixel(i, j, Color.rgb(br, br, br))
             }
         }
         return bitmap
     }
 
     private fun drawPointsOn(source: Bitmap): Bitmap {
-        val bitmap = source.scale(8, 8)
+        val bitmap = source.scale(w, h)
         val canvas = Canvas(bitmap)
         val paint = Paint()
         for (p in activity.points) {
             paint.color = Color.GRAY
-            canvas.drawCircle(p.x, p.y, 3.2F, paint)
+            canvas.drawCircle(p.x, p.y, 50F, paint)
 
-            if (p.isBlack) paint.color = Color.BLACK else Color.WHITE
-            canvas.drawCircle(p.x, p.y, 3F, paint)
+            if (p.isBlack) paint.color = Color.BLACK else paint.color = Color.WHITE
+            canvas.drawCircle(p.x, p.y, 45F, paint)
+
         }
         return bitmap
     }
