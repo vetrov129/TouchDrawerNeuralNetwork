@@ -32,13 +32,14 @@ class Updater(private val activity: MainActivity) : Runnable {
     }
 
     override fun run() {
+        val trainerThread = Thread(Trainer(activity, network))
+        trainerThread.start()
         while (alive) {
             draw()
         }
     }
 
     private fun draw() {
-        if (activity.points.size > 0) train()
         val bitmap = drawPointsOn(createBackground())
         val canvas = Canvas(bitmap)
         val paint = Paint()
@@ -77,20 +78,5 @@ class Updater(private val activity: MainActivity) : Runnable {
         return bitmap
     }
 
-    private fun train() {
-        for (i in 0..10000) {
 
-            val p = activity.points[(Math.random() * activity.points.size).toInt()] ?: continue
-            val nx = p.x / w - 0.5
-            val ny = p.y / h - 0.5
-
-            network.feedForward(doubleArrayOf(nx, ny))
-
-            val targets = DoubleArray(2)
-            if (p.isBlack) targets[0] = 1.0
-            else targets[1] = 1.0
-
-            network.backpropagation(targets)
-        }
-    }
 }

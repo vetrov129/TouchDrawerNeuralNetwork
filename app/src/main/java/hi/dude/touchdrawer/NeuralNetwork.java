@@ -85,4 +85,10 @@ public class NeuralNetwork {
         }
     }
 
+    public void setWeights(NeuralNetwork nn) {
+        for (int i = 0; i < layers.length; i++) {
+            System.arraycopy(nn.layers[i].weights, 0, this.layers[i].weights, 0, this.layers[i].size);
+        }
+    }
+
 }
