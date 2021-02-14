@@ -5,4 +5,7 @@
     <color name="colorAccent">#000000</color>
     <color name="colorBlack">#000000</color>
     <color name="colorWhite">#ffffff</color>
+    <color name="colorTransparent">#00000000</color>
+    <color name="colorNotSelected">#777777</color>
+    <color name="colorSelected">#EDEA9D</color>
 </resources>
