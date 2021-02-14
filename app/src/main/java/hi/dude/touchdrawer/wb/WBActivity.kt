@@ -1,5 +1,6 @@
 package hi.dude.touchdrawer.wb
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -9,6 +10,7 @@ import androidx.core.content.ContextCompat
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import hi.dude.touchdrawer.R
 import hi.dude.touchdrawer.rgb.GraphicsUpdaterRGB
+import hi.dude.touchdrawer.rgb.RGBActivity
 
 class WBActivity : AppCompatActivity() {
 
@@ -53,7 +55,7 @@ class WBActivity : AppCompatActivity() {
         updateBtn = findViewById(R.id.update_button)
         reset = findViewById(R.id.reset_button)
 
-        toRgbBtn.setOnClickListener { onBackPressed() }
+        toRgbBtn.setOnClickListener { toRgbClicked() }
         updateBtn.setOnClickListener { updateClicked() }
         reset.setOnClickListener { resetClicked() }
 
@@ -128,5 +130,12 @@ class WBActivity : AppCompatActivity() {
         updater = GraphicsUpdaterWB(this)
         threadUpdater = Thread(updater)
         threadUpdater.start()
+    }
+
+    private fun toRgbClicked() {
+        updater.stopTrainer()
+        updater.alive = false
+        points.clear()
+        startActivity(Intent(this, RGBActivity::class.java))
     }
 }
