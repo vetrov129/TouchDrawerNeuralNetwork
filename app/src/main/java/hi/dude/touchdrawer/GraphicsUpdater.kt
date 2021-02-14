@@ -9,7 +9,7 @@ import kotlin.math.exp
 import kotlin.math.max
 import kotlin.math.min
 
-class Updater(private val activity: MainActivity) : Runnable {
+class GraphicsUpdater(private val activity: MainActivity) : Runnable {
 
     private val TAG = "Updater"
 
@@ -32,7 +32,7 @@ class Updater(private val activity: MainActivity) : Runnable {
     }
 
     override fun run() {
-        val trainerThread = Thread(Trainer(activity, network))
+        val trainerThread = Thread(NetworkTrainer(activity, network))
         trainerThread.start()
         while (alive) {
             draw()

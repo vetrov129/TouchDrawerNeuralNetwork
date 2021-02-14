@@ -25,7 +25,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var blackBtn: FloatingActionButton
     val points = ArrayList<Point>()
 
-    private lateinit var updater: Updater
+    private lateinit var updater: GraphicsUpdater
     private lateinit var threadUpdater: Thread
 
     private var ignore = false
@@ -53,7 +53,7 @@ class MainActivity : AppCompatActivity() {
         blackBtn.setOnClickListener { blackClicked() }
         whiteBtn.setOnClickListener { whiteClicked() }
 
-        updater = Updater(this)
+        updater = GraphicsUpdater(this)
         threadUpdater = Thread(updater)
         threadUpdater.start()
     }
@@ -81,7 +81,7 @@ class MainActivity : AppCompatActivity() {
         updater.alive = false
         threadUpdater.join()
         points.clear()
-        updater = Updater(this)
+        updater = GraphicsUpdater(this)
         threadUpdater = Thread(updater)
         threadUpdater.start()
     }

@@ -3,7 +3,7 @@ package hi.dude.touchdrawer
 import android.util.DisplayMetrics
 import kotlin.math.exp
 
-class Trainer(private val activity: MainActivity, private val outerNetwork: NeuralNetwork) : Runnable {
+class NetworkTrainer(private val activity: MainActivity, private val outerNetwork: NeuralNetwork) : Runnable {
 
     private val w: Int
     private val h: Int
