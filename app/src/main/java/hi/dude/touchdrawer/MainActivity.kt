@@ -30,7 +30,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var threadUpdater: Thread
 
     private var ignore = false
-    private var nextIsBlack = true
+    var nextIsBlack = true
     private var mode = Modes.WHITE_BLACK
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -39,7 +39,7 @@ class MainActivity : AppCompatActivity() {
 
         supportActionBar?.hide()
 
-        window.statusBarColor = ContextCompat.getColor(this, R.color.colorBlack)
+        window.statusBarColor = ContextCompat.getColor(this, R.color.colorNotSelected)
 
         view = findViewById(R.id.main_view)
         view.setOnTouchListener { _, event -> onTouch(event) }
@@ -61,7 +61,6 @@ class MainActivity : AppCompatActivity() {
 
     private fun onTouch(event: MotionEvent?): Boolean {
         Log.i(TAG, "onTouch: x = ${event?.x}, y = ${event?.y}")
-        var moved = false
         when (event?.action) {
             MotionEvent.ACTION_DOWN -> ignore = false
             MotionEvent.ACTION_MOVE -> ignore = true
@@ -69,17 +68,10 @@ class MainActivity : AppCompatActivity() {
                 if (!ignore) {
                     points.add(Point(event.x, event.y, nextIsBlack))
                     when (mode) {
-                        Modes.WHITE_BLACK -> {
-                            nextIsBlack = !nextIsBlack
-                            if (nextIsBlack)
-                                window.statusBarColor = ContextCompat.getColor(this, R.color.colorBlack)
-                            else
-                                window.statusBarColor = ContextCompat.getColor(this, R.color.colorWhite)
-                        }
+                        Modes.WHITE_BLACK -> nextIsBlack = !nextIsBlack
                         Modes.BLACK -> {}
                         Modes.WHITE -> {}
                     }
-
                 }
             }
         }
@@ -97,22 +89,15 @@ class MainActivity : AppCompatActivity() {
 
     private fun blackClicked() {
         mode = Modes.BLACK
-        window.statusBarColor = ContextCompat.getColor(this, R.color.colorBlack)
         nextIsBlack = true
-
     }
 
     private fun whiteClicked() {
         mode = Modes.WHITE
-        window.statusBarColor = ContextCompat.getColor(this, R.color.colorWhite)
         nextIsBlack = false
     }
 
     private fun whiteBlackClicked() {
         mode = Modes.WHITE_BLACK
-        if (nextIsBlack)
-            window.statusBarColor = ContextCompat.getColor(this, R.color.colorBlack)
-        else
-            window.statusBarColor = ContextCompat.getColor(this, R.color.colorWhite)
     }
 }

@@ -1,9 +1,6 @@
 package hi.dude.touchdrawer
 
-import android.graphics.Bitmap
-import android.graphics.Canvas
-import android.graphics.Color
-import android.graphics.Paint
+import android.graphics.*
 import android.graphics.drawable.BitmapDrawable
 import android.util.DisplayMetrics
 import androidx.core.graphics.createBitmap
@@ -43,6 +40,10 @@ class Updater(private val activity: MainActivity) : Runnable {
     private fun draw() {
         if (activity.points.size > 0) train()
         val bitmap = drawPointsOn(createBackground())
+        val canvas = Canvas(bitmap)
+        val paint = Paint()
+        if (activity.nextIsBlack) paint.color = Color.BLACK else paint.color = Color.WHITE
+        canvas.drawCircle((w / 2).toFloat(), (h + 50).toFloat(), 100f, paint)
         synchronized(activity) {
             activity.runOnUiThread { activity.view.background = BitmapDrawable(activity.resources, bitmap) }
         }
