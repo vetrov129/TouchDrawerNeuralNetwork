@@ -1,15 +1,16 @@
-package hi.dude.touchdrawer
+package hi.dude.touchdrawer.wb
 
 import android.graphics.*
 import android.graphics.drawable.BitmapDrawable
 import android.util.DisplayMetrics
 import androidx.core.graphics.createBitmap
 import androidx.core.graphics.scale
+import hi.dude.touchdrawer.network.NeuralNetwork
 import kotlin.math.exp
 import kotlin.math.max
 import kotlin.math.min
 
-class GraphicsUpdater(private val activity: MainActivity) : Runnable {
+class GraphicsUpdaterWB(private val activity: WBActivity) : Runnable {
 
     private val TAG = "Updater"
 
@@ -17,6 +18,9 @@ class GraphicsUpdater(private val activity: MainActivity) : Runnable {
 
     private val w: Int
     private val h: Int
+
+    private lateinit var trainer: NetworkTrainerWB
+    private lateinit var trainerThread: Thread
 
     var alive = true
 
@@ -32,7 +36,8 @@ class GraphicsUpdater(private val activity: MainActivity) : Runnable {
     }
 
     override fun run() {
-        val trainerThread = Thread(NetworkTrainer(activity, network))
+        trainer = NetworkTrainerWB(activity, network)
+        trainerThread = Thread(trainer)
         trainerThread.start()
         while (alive) {
             draw()
@@ -78,5 +83,8 @@ class GraphicsUpdater(private val activity: MainActivity) : Runnable {
         return bitmap
     }
 
-
+    fun stopTrainer() {
+        trainer.alive = false
+        trainerThread.join()
+    }
 }

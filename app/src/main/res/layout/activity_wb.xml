@@ -5,12 +5,33 @@
         xmlns:app="http://schemas.android.com/apk/res-auto"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".MainActivity">
+        tools:context=".wb.WBActivity">
 
     <View
             android:id="@+id/main_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"/>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/to_rgb_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            app:srcCompat="@android:drawable/ic_menu_revert"
+            android:layout_above="@id/update_button"
+            android:layout_alignParentEnd="true"
+            android:layout_marginEnd="20dp"/>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/update_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            app:srcCompat="@android:drawable/ic_menu_rotate"
+            android:layout_above="@id/reset_button"
+            android:layout_alignParentEnd="true"
+            android:layout_marginEnd="20dp"
+            android:layout_marginTop="20dp"/>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/reset_button"
@@ -46,7 +67,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:clickable="true"
-            app:srcCompat="@drawable/w"
+            app:srcCompat="@drawable/white"
             android:layout_above="@id/wb_button"
             android:layout_alignParentStart="true"
             android:layout_marginStart="10dp"
@@ -63,7 +84,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:clickable="true"
-            app:srcCompat="@drawable/b"
+            app:srcCompat="@drawable/black"
             android:layout_above="@id/w_button"
             android:layout_alignParentStart="true"
             android:layout_marginTop="20dp"

@@ -1,4 +1,4 @@
-package hi.dude.touchdrawer;
+package hi.dude.touchdrawer.network;
 
 import java.util.function.UnaryOperator;
 

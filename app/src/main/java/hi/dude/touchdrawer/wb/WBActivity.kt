@@ -1,4 +1,4 @@
-package hi.dude.touchdrawer
+package hi.dude.touchdrawer.wb
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -7,8 +7,10 @@ import android.view.MotionEvent
 import android.view.View
 import androidx.core.content.ContextCompat
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import hi.dude.touchdrawer.R
+import hi.dude.touchdrawer.rgb.GraphicsUpdaterRGB
 
-class MainActivity : AppCompatActivity() {
+class WBActivity : AppCompatActivity() {
 
     private val TAG = "MainActivity"
 
@@ -19,13 +21,17 @@ class MainActivity : AppCompatActivity() {
     }
 
     lateinit var view: View
+
+    private lateinit var toRgbBtn: FloatingActionButton
+    private lateinit var updateBtn: FloatingActionButton
     private lateinit var reset: FloatingActionButton
+
     private lateinit var whiteBlackBtn: FloatingActionButton
     private lateinit var whiteBtn: FloatingActionButton
     private lateinit var blackBtn: FloatingActionButton
-    val points = ArrayList<Point>()
+    val points = ArrayList<WBPoint>()
 
-    private lateinit var updater: GraphicsUpdater
+    private lateinit var updater: GraphicsUpdaterWB
     private lateinit var threadUpdater: Thread
 
     private var ignore = false
@@ -34,7 +40,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        setContentView(R.layout.activity_wb)
 
         supportActionBar?.hide()
 
@@ -43,17 +49,23 @@ class MainActivity : AppCompatActivity() {
         view = findViewById(R.id.main_view)
         view.setOnTouchListener { _, event -> onTouch(event) }
 
+        toRgbBtn = findViewById(R.id.to_rgb_button)
+        updateBtn = findViewById(R.id.update_button)
         reset = findViewById(R.id.reset_button)
+
+        toRgbBtn.setOnClickListener { onBackPressed() }
+        updateBtn.setOnClickListener { updateClicked() }
+        reset.setOnClickListener { resetClicked() }
+
         whiteBlackBtn = findViewById(R.id.wb_button)
         whiteBtn = findViewById(R.id.w_button)
         blackBtn = findViewById(R.id.b_button)
 
-        reset.setOnClickListener { resetClicked() }
         whiteBlackBtn.setOnClickListener { whiteBlackClicked() }
         blackBtn.setOnClickListener { blackClicked() }
         whiteBtn.setOnClickListener { whiteClicked() }
 
-        updater = GraphicsUpdater(this)
+        updater = GraphicsUpdaterWB(this)
         threadUpdater = Thread(updater)
         threadUpdater.start()
     }
@@ -65,7 +77,7 @@ class MainActivity : AppCompatActivity() {
             MotionEvent.ACTION_MOVE -> ignore = true
             MotionEvent.ACTION_UP -> {
                 if (!ignore) {
-                    points.add(Point(event.x, event.y, nextIsBlack))
+                    points.add(WBPoint(event.x, event.y, nextIsBlack))
                     when (mode) {
                         Modes.WHITE_BLACK -> nextIsBlack = !nextIsBlack
                         Modes.BLACK -> {}
@@ -81,9 +93,7 @@ class MainActivity : AppCompatActivity() {
         updater.alive = false
         threadUpdater.join()
         points.clear()
-        updater = GraphicsUpdater(this)
-        threadUpdater = Thread(updater)
-        threadUpdater.start()
+        startUpdater()
     }
 
     private fun blackClicked() {
@@ -98,5 +108,25 @@ class MainActivity : AppCompatActivity() {
 
     private fun whiteBlackClicked() {
         mode = Modes.WHITE_BLACK
+    }
+
+    override fun onBackPressed() {
+        updater.stopTrainer()
+        updater.alive = false
+        threadUpdater.join()
+        super.onBackPressed()
+    }
+
+    private fun updateClicked() {
+        updater.stopTrainer()
+        updater.alive = false
+        threadUpdater.join()
+        startUpdater()
+    }
+
+    private fun startUpdater() {
+        updater = GraphicsUpdaterWB(this)
+        threadUpdater = Thread(updater)
+        threadUpdater.start()
     }
 }

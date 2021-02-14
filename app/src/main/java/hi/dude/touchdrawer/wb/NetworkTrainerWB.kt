@@ -1,15 +1,16 @@
-package hi.dude.touchdrawer
+package hi.dude.touchdrawer.wb
 
 import android.util.DisplayMetrics
+import hi.dude.touchdrawer.network.NeuralNetwork
 import kotlin.math.exp
 
-class NetworkTrainer(private val activity: MainActivity, private val outerNetwork: NeuralNetwork) : Runnable {
+class NetworkTrainerWB(private val activity: WBActivity, private val outerNetwork: NeuralNetwork) : Runnable {
 
     private val w: Int
     private val h: Int
     private val innerNetwork: NeuralNetwork
 
-    private var alive = true
+    var alive = true
 
     init {
         val metrics = DisplayMetrics()
