@@ -1,4 +1,4 @@
-package hi.dude.touchdrawer.rgb
+package hi.dude.touchdrawer.enums
 
 import android.graphics.Color
 

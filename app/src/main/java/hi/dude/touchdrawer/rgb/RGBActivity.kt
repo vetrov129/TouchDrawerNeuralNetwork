@@ -1,28 +1,20 @@
 package hi.dude.touchdrawer.rgb
 
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
-import android.view.MotionEvent
 import android.view.View
 import androidx.core.content.ContextCompat
 import com.google.android.material.floatingactionbutton.FloatingActionButton
-import hi.dude.touchdrawer.R
+import hi.dude.touchdrawer.*
+import hi.dude.touchdrawer.enums.Modes
+import hi.dude.touchdrawer.enums.PColor
 import hi.dude.touchdrawer.wb.WBActivity
-import kotlin.random.Random
 
-class RGBActivity : AppCompatActivity() {
+class RGBActivity : AbstractDrawActivity() {
 
     private val TAG = "RGBActivity"
 
-    enum class Modes {
-        ONE,
-        ALL,
-        RGB
-    }
-
-    lateinit var view: View
+    override lateinit var view: View
     private lateinit var wbBtn: FloatingActionButton
     private lateinit var updateBtn: FloatingActionButton
     private lateinit var reset: FloatingActionButton
@@ -39,14 +31,8 @@ class RGBActivity : AppCompatActivity() {
     private lateinit var allBtn: FloatingActionButton
     private lateinit var rgbBtn: FloatingActionButton
 
-    val points = ArrayList<RGBPoint>()
-
-    private lateinit var updater: GraphicsUpdaterRGB
-    private lateinit var threadUpdater: Thread
-
-    private var ignore = false
-    var nextColor = PColor.RED
-    var currentMode = Modes.RGB
+    override var nextColor = PColor.RED
+    override var currentMode = Modes.RGB
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -92,71 +78,12 @@ class RGBActivity : AppCompatActivity() {
         rgbBtn.setOnClickListener { changeMode(PColor.RED, Modes.RGB) }
     }
 
-    override fun onResume() {
-        updater = GraphicsUpdaterRGB(this)
-        threadUpdater = Thread(updater)
-        threadUpdater.start()
-        super.onResume()
-    }
-
-    private fun onTouch(event: MotionEvent?): Boolean {
-        Log.i(TAG, "onTouch: x = ${event?.x}, y = ${event?.y}")
-        when (event?.action) {
-            MotionEvent.ACTION_DOWN -> ignore = false
-            MotionEvent.ACTION_MOVE -> ignore = true
-            MotionEvent.ACTION_UP -> {
-                if (!ignore) points.add(RGBPoint(event.x, event.y, nextColor))
-                setNextColor()
-            }
-        }
-        return true
-    }
-
-    private fun setNextColor() {
-        when (currentMode) {
-            Modes.ONE -> {}
-            Modes.ALL -> nextColor = PColor.values()[Random.nextInt(7)]
-            Modes.RGB -> {
-                nextColor = when (nextColor) {
-                    PColor.RED -> PColor.GREEN
-                    PColor.GREEN -> PColor.BLUE
-                    PColor.BLUE -> PColor.RED
-                    else -> PColor.GREEN
-                }
-            }
-        }
-    }
-
-    private fun resetClicked() {
-        updater.stopTrainer()
-        updater.alive = false
-        threadUpdater.join()
-        points.clear()
-        startUpdater()
-    }
-
-    private fun changeMode(color: PColor, mode: Modes = Modes.ONE) {
-        currentMode = mode
-        nextColor = color
-    }
-
     private fun toWhiteBlackClicked() {
-        updater.stopTrainer()
-        updater.alive = false
-        points.clear()
+        stopUpdater()
         startActivity(Intent(this, WBActivity::class.java))
     }
 
-    private fun updateClicked() {
-        updater.stopTrainer()
-        updater.alive = false
-        threadUpdater.join()
-        startUpdater()
-    }
-
-    private fun startUpdater() {
+    override fun initUpdater() {
         updater = GraphicsUpdaterRGB(this)
-        threadUpdater = Thread(updater)
-        threadUpdater.start()
     }
 }
